@@ -35,7 +35,7 @@ export function Login() {
 
     async function Login() {
         const response = await authController.login(inputs.email, inputs.senha)
-        console.log(response)
+       
         if (response.status === 400) {
             setErrorLogin(true)
         }
@@ -44,6 +44,9 @@ export function Login() {
             setLogado(true)
             await AsyncStorage.setItem('user', JSON.stringify(response.data.messageServer.userInformation))
             await AsyncStorage.setItem('token', JSON.stringify(response.data.messageServer.token))
+            if(response.data.messageServer.userInformation.tp_usuario === "A"){
+                alert("Acesso de Administrador")
+            }
         }
     }
 

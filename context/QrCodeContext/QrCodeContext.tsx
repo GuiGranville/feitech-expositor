@@ -1,6 +1,7 @@
 import { interacaoController } from "@/controllers/interacao/interacao";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
+import { GlobalContext } from "../Global/GlobalContext";
 
 
 interface QrCodeContextType {
@@ -14,6 +15,7 @@ export const QrCodeContext = React.createContext({} as QrCodeContextType);
 export function QrCodeProvider({ children }: any) {
 
     const [interacoes, setInteracoes] = React.useState<any>([]);
+    const {tpUsuario} = useContext(GlobalContext);
 
     useEffect(() => {
         getInteracoes()
@@ -23,7 +25,15 @@ export function QrCodeProvider({ children }: any) {
         const qrCodes = await AsyncStorage.getItem('@qrCode');
         if (qrCodes === null) {
             const cd_usuario = JSON.parse(await AsyncStorage.getItem('user') as string).cd_usuario
-            await interacaoController.getInteracoes(cd_usuario).then((response) => {
+            if(tpUsuario !== 'A'){
+                await interacaoController.getInteracoes(cd_usuario).then((response) => {
+                    setInteracoes(response.data.messageServer)
+                    AsyncStorage.setItem('@qrCode', JSON.stringify(response.data.messageServer))
+                })
+                return
+            } 
+            await interacaoController.getCheckin(cd_usuario).then((response) => {
+                
                 setInteracoes(response.data.messageServer)
                 AsyncStorage.setItem('@qrCode', JSON.stringify(response.data.messageServer))
             })
@@ -35,7 +45,7 @@ export function QrCodeProvider({ children }: any) {
     async function LeituraQrCode(data: string) {
         try {
             const parsedData = JSON.parse(data);
-            const updatedInteracoes = [...interacoes, parsedData];
+            const updatedInteracoes = [parsedData, ...interacoes];
             setInteracoes(updatedInteracoes);
 
             const qrCodes = await AsyncStorage.getItem('@qrCode');
@@ -43,7 +53,7 @@ export function QrCodeProvider({ children }: any) {
                 await AsyncStorage.setItem('@qrCode', JSON.stringify(updatedInteracoes));
             } else {
                 const array = JSON.parse(qrCodes);
-                array.push(parsedData);
+                array.unshift(parsedData);
                 await AsyncStorage.setItem('@qrCode', JSON.stringify(array));
             }
 
@@ -53,7 +63,13 @@ export function QrCodeProvider({ children }: any) {
                 cd_usuario_lido: parsedData.cd_usuario
             }
 
-            await interacaoController.createInteracao(interacao)
+            if(tpUsuario !== 'A') {
+                await interacaoController.createInteracao(interacao)
+                return
+            }
+            await interacaoController.registerCheckin(interacao)
+
+            
         } catch (error) {
             console.log(error);
         }

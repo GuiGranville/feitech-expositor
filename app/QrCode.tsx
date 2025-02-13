@@ -16,7 +16,6 @@ export function QrCode() {
 
     async function storage() {
         const user = await AsyncStorage.getItem('user');
-        console.log(JSON.parse(user!))
         setUsuarioInfos({
             cd_usuario: JSON.parse(user!).cd_usuario,
             nm_usuario: JSON.parse(user!).nm_usuario,
