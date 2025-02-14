@@ -35,7 +35,7 @@ export function Login() {
 
     async function Login() {
         const response = await authController.login(inputs.email, inputs.senha)
-       
+
         if (response.status === 400) {
             setErrorLogin(true)
         }
@@ -44,7 +44,7 @@ export function Login() {
             setLogado(true)
             await AsyncStorage.setItem('user', JSON.stringify(response.data.messageServer.userInformation))
             await AsyncStorage.setItem('token', JSON.stringify(response.data.messageServer.token))
-            if(response.data.messageServer.userInformation.tp_usuario === "A"){
+            if (response.data.messageServer.userInformation.tp_usuario === "A") {
                 alert("Acesso de Administrador")
             }
         }
@@ -67,15 +67,11 @@ export function Login() {
                     <View style={styles.containerLoginInputs}>
                         <View style={styles.containerLoginInputsInput}>
                             <Text>Email</Text>
-                            <KeyboardAvoidingView behavior='position'>
-                                <TextInput keyboardType='email-address' style={styles.input} onChange={(e) => setInputs({ ...inputs, email: e.nativeEvent.text })} />
-                            </KeyboardAvoidingView>
+                            <TextInput keyboardType='email-address' style={styles.input} onChange={(e) => setInputs({ ...inputs, email: e.nativeEvent.text })} />
                         </View>
                         <View style={styles.containerLoginInputsInput}>
                             <Text>Senha</Text>
-                            <KeyboardAvoidingView behavior='position'>
                                 <TextInput style={styles.input} secureTextEntry onChange={(e) => setInputs({ ...inputs, senha: e.nativeEvent.text })} />
-                            </KeyboardAvoidingView>
                             {errorLogin && <Text style={{ color: 'red', marginTop: 5 }}>Email ou senha incorretos</Text>}
                         </View>
                     </View>
