@@ -1,4 +1,4 @@
-export const api = 'https://api.businesscontrol.app.br'
+export const api = 'https://apifeitech.i98.com.br'
 
 // export const api = 'http://91.108.125.69:3210'
 
